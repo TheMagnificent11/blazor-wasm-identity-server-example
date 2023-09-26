@@ -1,0 +1,27 @@
+version: '3.4'
+
+networks:
+  identity-example:
+    name: identity-example
+
+services:
+  blazorwasmidentityserver.server:
+    image: ${DOCKER_REGISTRY-}blazorwasmidentityserverserver
+    build:
+      context: .
+      dockerfile: BlazorWasmIdentityServer/Server/Dockerfile
+    networks:
+      - identity-example
+  database:
+    container_name: identity_sql
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - 5434:1433
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Express
+      - SA_PASSWORD=<YourStrong@Passw0rd!>
+    volumes:
+      - ./data:/var/opt/mssql/data
+    networks:
+      - identity-example
